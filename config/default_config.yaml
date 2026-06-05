@@ -1,0 +1,108 @@
+# Network Anomaly Detection - Default Configuration
+
+# Data Configuration
+data:
+  input_path: "data/raw/network_traffic.csv"
+  output_path: "data/processed/"
+  test_size: 0.2
+  random_state: 42
+  train_size: 0.8
+
+# Feature Configuration
+features:
+  numerical_features:
+    - bytes_sent
+    - bytes_received
+    - duration
+    - packet_count
+    - src_port
+    - dst_port
+  categorical_features:
+    - protocol
+    - src_ip
+    - dst_ip
+  scaling: "standard"  # standard, minmax
+  feature_selection: true
+  selection_method: "mutual_info"  # mutual_info, variance_threshold
+
+# Model Configuration
+model:
+  type: "ensemble"  # isolation_forest, lof, autoencoder, svm, ensemble
+  
+  # Isolation Forest Parameters
+  isolation_forest:
+    n_estimators: 100
+    max_samples: "auto"
+    contamination: 0.1
+    random_state: 42
+    n_jobs: -1
+  
+  # Local Outlier Factor Parameters
+  lof:
+    n_neighbors: 20
+    contamination: "auto"
+    algorithm: "auto"
+    metric: "minkowski"
+  
+  # One-Class SVM Parameters
+  svm:
+    nu: 0.05
+    kernel: "rbf"
+    gamma: "auto"
+  
+  # Autoencoder Parameters
+  autoencoder:
+    input_dim: null  # Set automatically
+    encoding_dim: 8
+    epochs: 50
+    batch_size: 32
+    threshold: 0.95  # percentile for anomaly detection
+    learning_rate: 0.001
+  
+  # Ensemble Parameters
+  ensemble:
+    models:
+      - isolation_forest
+      - lof
+    voting: "hard"  # hard, soft
+    weights: null  # Set equal weights if null
+
+# Training Configuration
+training:
+  validation_split: 0.2
+  early_stopping: true
+  patience: 10
+  verbose: 1
+
+# Evaluation Configuration
+evaluation:
+  metrics:
+    - accuracy
+    - precision
+    - recall
+    - f1_score
+    - roc_auc
+    - confusion_matrix
+  cross_validation: 5
+  test_mode: false
+
+# Visualization Configuration
+visualization:
+  confusion_matrix: true
+  roc_curve: true
+  feature_importance: true
+  anomaly_distribution: true
+  output_dir: "results/visualizations/"
+
+# Logging Configuration
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  file: "logs/network_anomaly.log"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+# Processing Configuration
+processing:
+  n_jobs: -1
+  random_state: 42
+  verbose: true
+  save_preprocessed: true
